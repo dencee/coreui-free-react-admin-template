@@ -458,6 +458,7 @@ const FullscreenModal = () => {
 }
 
 const Modals = () => {
+  console.log('modal run!!!!!!!!')
   return (
     <CRow>
       <CCol xs={12}>

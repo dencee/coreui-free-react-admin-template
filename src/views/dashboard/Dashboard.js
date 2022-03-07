@@ -179,7 +179,7 @@ const Dashboard = () => {
       activity: 'Last week',
     },
   ]
-
+  console.log('table run!!!!!!!!')
   return (
     <>
       <WidgetsDropdown />
