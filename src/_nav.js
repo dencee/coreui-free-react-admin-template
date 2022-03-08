@@ -1,15 +1,13 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
 import {
-  cilBell,
-  cilCalculator,
   cilSpeedometer,
   cilHospital,
   cilChartLine,
   cilPeople,
   cilUser,
 } from '@coreui/icons'
-import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
+import { CNavGroup, CNavItem } from '@coreui/react'
 
 const _nav = [
   {
@@ -66,43 +64,6 @@ const _nav = [
       }
     ],
   },
-  {
-    component: CNavGroup,
-    name: 'Notifications',
-    icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Alerts',
-        to: '/notifications/alerts',
-      },
-      {
-        component: CNavItem,
-        name: 'Badges',
-        to: '/notifications/badges',
-      },
-      {
-        component: CNavItem,
-        name: 'Modal',
-        to: '/notifications/modals',
-      },
-      {
-        component: CNavItem,
-        name: 'Toasts',
-        to: '/notifications/toasts',
-      },
-    ],
-  },
-  {
-    component: CNavItem,
-    name: 'Widgets',
-    to: '/widgets',
-    icon: <CIcon icon={cilCalculator} customClassName="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
-  }
 ]
 
 export default _nav
