@@ -1,11 +1,11 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
 import {
+  cilAddressBook,
   cilSpeedometer,
   cilHospital,
   cilChartLine,
   cilPeople,
-  cilUser,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
 
@@ -50,7 +50,7 @@ const _nav = [
     component: CNavGroup,
     name: 'Users',
     to: '/users',
-    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilAddressBook} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,

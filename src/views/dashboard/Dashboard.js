@@ -25,7 +25,7 @@ const Dashboard = () => {
       </h1>
 
       <CRow>
-      {Array.from({ length: 6 }).map((_, idx) => (
+      {Array.from({ length: overviewLabels.length }).map((_, idx) => (
         <CCol key={idx} className="mb-4">
         <CCard>
           <CCardBody>
