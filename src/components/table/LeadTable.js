@@ -8,7 +8,8 @@ import SearchModal from 'src/components/table/SearchModal'
 import StickyTable from 'src/components/table/StickyTable'
 
 import{
-  CTableHead,
+  CPagination,
+  CPaginationItem,
 } from '@coreui/react'
 
 export const LeadTable = () => {
@@ -40,7 +41,8 @@ export const LeadTable = () => {
     getToggleHideAllColumnsProps
   } = useTable({
       columns,
-      data
+      data,
+      initialState: { pageSize: 25 },
     },
     useFilters,
     useGlobalFilter,
@@ -87,24 +89,40 @@ export const LeadTable = () => {
       </StickyTable>
 
       <div className="pagination">
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {'<<'}
-        </button>{' '}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          {'<'}
-        </button>{' '}
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          {'>'}
-        </button>{' '}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {'>>'}
-        </button>{' '}
+
+      <CPagination
+        activePage={pageIndex + 1}
+        pages={10}
+        onActivePageChange={(i) => gotoPage(i)}>
+        <CPaginationItem
+          aria-label="First"
+          disabled={!canPreviousPage}
+          onClick={() => gotoPage(0)}
+        ><span aria-hidden="true">&laquo;</span></CPaginationItem>
+        <CPaginationItem
+          aria-label="Previous"
+          disabled={!canPreviousPage}
+          onClick={() => previousPage()}
+        ><span aria-hidden="true">&lt;</span></CPaginationItem>
+        <CPaginationItem
+          aria-label="Last"
+          disabled={!canNextPage}
+          onClick={() => nextPage()}
+        ><span aria-hidden="true">&gt;</span></CPaginationItem>
+        <CPaginationItem
+          aria-label="Last"
+          disabled={!canNextPage}
+          onClick={() => gotoPage(pageCount - 1)}
+        ><span aria-hidden="true">&raquo;</span></CPaginationItem>
+      </CPagination>
+
         <span>
           Page{' '}
           <strong>
             {pageIndex + 1} of {pageOptions.length}
           </strong>{' '}
         </span>
+
         <span>
           | Go to page:{' '}
           <input
@@ -119,19 +137,21 @@ export const LeadTable = () => {
             style={{ width: '50px' }}
           />
         </span>{' '}
-        <select
-          value={pageSize}
-          onChange={e => {
-            setPageSize(Number(e.target.value))
-          }}
-        >
-          {[10, 25, 50].map(pageSize => (
-            <option key={pageSize}
-                    value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
+        <span>
+          <select
+            value={pageSize}
+            onChange={e => {
+              setPageSize(Number(e.target.value))
+            }}
+          >
+            {[10, 25, 50].map(pageSize => (
+              <option key={pageSize}
+                      value={pageSize}>
+                Show {pageSize}
+              </option>
+            ))}
+          </select>
+        </span>
       </div>
     </>
   )
