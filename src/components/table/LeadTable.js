@@ -3,24 +3,17 @@ import { useTable, useSortBy, useGlobalFilter, useFilters,
          usePagination, useRowSelect, useColumnOrder } from 'react-table'
 import MOCK_DATA from './Arjuna_MOCK_DATA.json'
 import { COLUMNS } from './columns'
-import ColumnFilter from './ColumnFilter'
 import Table from 'react-bootstrap/Table'
 import SearchModal from 'src/components/table/SearchModal'
+import StickyTable from 'src/components/table/StickyTable'
 
-import {
-  CTable,
+import{
   CTableHead,
-  CTableHeaderCell,
-  CTableRow,
-  CTableBody,
-  CTableDataCell
 } from '@coreui/react'
 
 export const LeadTable = () => {
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => MOCK_DATA, []);
-
-  const defaultColumn = useMemo(() => {return {Filter : ColumnFilter}}, []);
 
   const {
     getTableProps,
@@ -28,8 +21,6 @@ export const LeadTable = () => {
     headerGroups,
     prepareRow,
     state,
-    setGlobalFilter,
-    setFilter,
     page, // Instead of using 'rows', we'll use page,
     // which has only the rows for the active page
 
@@ -49,8 +40,7 @@ export const LeadTable = () => {
     getToggleHideAllColumnsProps
   } = useTable({
       columns,
-      data,
-      defaultColumn,
+      data
     },
     useFilters,
     useGlobalFilter,
@@ -60,28 +50,12 @@ export const LeadTable = () => {
     useRowSelect,
   );
 
-  const { globalFilter, filters } = state;
-  const [isOpen, setisOpen] = useState(false);
-
-  function changeColOrder() {
-    setColumnOrder([
-      'id',
-      'last_name',
-      'first_name',
-      'birthday',
-      'e-mail',
-      'phone'
-    ]);
-  }
-
-  //<GlobalFilter filter={globalFilter}
-  //setFilter={setGlobalFilter} />
-
   return (
     <>
       <SearchModal hg={headerGroups}/>
-      <br /><br />
+      <br />
 
+      <StickyTable height={350}>
       <Table {...getTableProps()} striped bordered hover responsive="sm">
         <thead>
           {headerGroups.map( (headerGroup, idx1) => (
@@ -110,6 +84,7 @@ export const LeadTable = () => {
           })}
         </tbody>
       </Table>
+      </StickyTable>
 
       <div className="pagination">
         <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>

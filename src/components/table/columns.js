@@ -1,9 +1,9 @@
-import ColumnFilter from './ColumnFilter'
+import React from "react";
 
 // -DMC Create multiple functions for optimization
 function multiSelectFilter(rows, colIds, filterValue){
   //return filterValue === 0 ? rows : rows.filter( (row) => filterValue.includes(String(row.original.status)))
-  if( filterValue == 0 ){
+  if( filterValue.length === 0 ){
     return rows;
   } else {
     const result = rows.filter( (row) => {
@@ -19,55 +19,58 @@ function multiSelectFilter(rows, colIds, filterValue){
 
       return filterValue.includes(rowOriginalStr)
     });
+
     return result;
   }
 }
 
+const defaultHeader = (headerText) => {
+  return( <div style={{ textAlign: "center" }}>{headerText}</div> );
+}
+
 export const COLUMNS = [
       {
-        Header: 'Name',
+        Header: defaultHeader('Name'),
         Footer: 'Name',
         accessor: 'name',
         disableFilters: true
       } ,
       {
-        Header: 'Phone',
+        Header: defaultHeader('Phone'),
         Footer: 'Phone',
         accessor: 'phone',
         disableSortBy: true,
         disableFilters: true
       }, 
       {
-        Header: 'Engagement',
+        Header: defaultHeader('Engagement'),
         Footer: 'Engagement',
         accessor: 'engagement',
         disableSortBy: true,
+        disableFilters: true,
       },
       {
-        Header: 'E-mail',
+        Header: defaultHeader('E-mail'),
         Footer: 'E-mail',
         accessor: 'email',
         disableFilters: true
       },
       {
-        Header: 'Date',
+        Header: defaultHeader('Date'),
         Footer: 'Date',
         accessor: 'date',
-        Filter: ColumnFilter,
         filter: multiSelectFilter
       },
       {
-        Header: 'Lead Status',
+        Header: defaultHeader('Lead Status'),
         Footer: 'Lead Status',
         accessor: 'status',
-        Filter: ColumnFilter,
         filter: multiSelectFilter
       },
       {
-        Header: 'Indication',
+        Header: defaultHeader('Indication'),
         Footer: 'Indication',
         accessor: 'indication',
-        Filter: ColumnFilter,
         filter: multiSelectFilter
       }
    ];

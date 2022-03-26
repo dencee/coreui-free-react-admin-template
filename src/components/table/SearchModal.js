@@ -16,6 +16,7 @@ import {
   CRow
 } from '@coreui/react'
 
+import { DateRange } from 'react-date-range';
 import { BsSliders } from 'react-icons/bs';
 
 const dateLabels = ['Today', 'Yesterday', 'Last 7 Days', 'Last 30 Days', 'This Month', 'Last Month', 'Custom'];
@@ -27,25 +28,134 @@ const indicationLabels = ['Adjustment Disorder', 'Depression', 'Lumbosacral Radi
                           'Obsessive Compulsive Disorder', 'PTSD', 'Schizophrenia', 'Schizophrenia - Weight Gain',
                           'Social Anxiety Disorder'];
 
-function applyFilterChanges(columns, checkedDateState, checkedStatusState, checkedIndicationState){
+function getFormattedDate(dateObj){
+  return (dateObj.getMonth() + 1) + '/' + dateObj.getDate() + '/' + dateObj.getFullYear();
+}
+
+const DateCustom = (props) => {
+  return (
+      <DateRange
+        months={1}
+        showSelectionPreview={false}
+        showMonthAndYearPickers={false}
+        showPreview={false}
+        editableDateInputs={true}
+        ranges={[props.selection]}
+        onChange={ item => {
+          props.setDateSelectionFunc(item)
+        }}
+      /> 
+  )
+};
+
+const AppliedFilters = (props) => {
+  let filtersArr = []
+  
+  props.columns.forEach( (column) => {
+    if (column.filterValue && column.filterValue.length) {
+      if( column.Footer === 'Date' && column.filterValue.length > 1 ){
+        filtersArr.push(
+          <CButton
+            key={'multiDate'}
+            color="light"
+            size="sm"
+            disabled>
+              {column.filterValue[0] + ' - ' + column.filterValue[column.filterValue.length - 1]}
+          </CButton>
+        )
+      } else {
+        column.filterValue.forEach( (item, idx) => (
+          filtersArr.push(
+            <CButton
+              key={item + idx}
+              color="light"
+              size="sm"
+              disabled>
+                {item}
+            </CButton>
+          )
+        ))
+      }
+    }
+  })
+
+  return filtersArr;
+};
+
+function applyFilterChanges(columns, checkedDateState, checkedStatusState, checkedIndicationState, dateSelection){
   columns.forEach( (column) => {
     let filterArr = []
 
-    if( column.Header === 'Lead Status' ){
+    if( column.Footer === 'Lead Status' ){
       for( let i = 0; i < checkedStatusState.length; i++ ){
         if( checkedStatusState[i] ){
           filterArr.push(statusLabels[i])
         }
       }
-    } else if( column.Header === 'Indication' ){
+    } else if( column.Footer === 'Indication' ){
       for( let i = 0; i < checkedIndicationState.length; i++ ){
         if( checkedIndicationState[i] ){
           filterArr.push(indicationLabels[i])
         }
       }
-    } else if ( column.Header === 'Date' ){
+    } else if ( column.Footer === 'Date' ){
       // -DMC finish later
-      checkedDateState.forEach(e => console.log(e))
+      for( let i = 0; i < checkedDateState.length; i++ ){
+        if( checkedDateState[i] ){
+          let date = new Date();
+
+          if( dateLabels[i].toLowerCase() === 'today' ){
+            filterArr.push(getFormattedDate(date));
+          } else if( dateLabels[i].toLowerCase() === 'yesterday' ){
+            date.setDate(date.getDate() - 1);
+            filterArr.push(getFormattedDate(date))
+          } else if( dateLabels[i].toLowerCase() === 'last 7 days' ){
+            filterArr.push(getFormattedDate(date))
+
+            for( let i = 0; i < 6; i++){
+              date.setDate(date.getDate() - 1);
+              filterArr.push(getFormattedDate(date))
+            }
+          } else if( dateLabels[i].toLowerCase() === 'last 30 days' ){
+            filterArr.push(getFormattedDate(date))
+
+            for( let i = 0; i < 29; i++){
+              date.setDate(date.getDate() - 1);
+              filterArr.push(getFormattedDate(date))
+            }
+          } else if( dateLabels[i].toLowerCase() === 'this month' ){
+            const currentDay = date.getDate();
+
+            for( let i = 1; i <= currentDay; i++){
+              date.setDate(i);
+              filterArr.push(getFormattedDate(date))
+            }
+          } else if( dateLabels[i].toLowerCase() === 'last month' ){
+            date.setDate(0);
+            const lastMonth = date.getMonth();
+
+            while( date.getMonth() === lastMonth ){
+              filterArr.push(getFormattedDate(date))
+              date.setDate(date.getDate() - 1);
+            }
+          } else if( dateLabels[i].toLowerCase() === 'custom' ){
+            // Do not modify dateSelection Object.
+            // It will change the previously selected dates when going back into the filters modal
+            let currentDate = new Date(dateSelection.selection['startDate']);
+            let endDate = new Date(dateSelection.selection['endDate']);
+
+            if( currentDate != null ){
+              while( currentDate <= endDate ){
+                filterArr.push(getFormattedDate(currentDate))
+                currentDate.setDate(currentDate.getDate() + 1)
+              }
+            }
+          }
+
+          // Only 1 date option is allowed
+          break;
+        }
+      }
     }
 
     column.setFilter(filterArr);
@@ -53,11 +163,20 @@ function applyFilterChanges(columns, checkedDateState, checkedStatusState, check
 }
 
 const SearchModal = (props) => {
-  console.log(props.hg[0].headers.forEach(e => console.log(e.Header)))
+  //const columns = props.hg[0].headers == null ? null : props.hg[0].headers;
   const columns = props.hg[0].headers;
 
-  //const [filterState, setFilterState] = useState(filter)
+  // Visibility of the filter modal
   const [visible, setVisible] = useState(false);
+
+  // State of the date picker
+  const [dateSelection, setDateSelection] = useState({
+    selection: {
+      startDate: null,
+      endDate: new Date(),
+      key: 'selection'
+    }
+  });
 
   const allSwitchStyle = {
     display: 'flex',
@@ -87,31 +206,31 @@ const SearchModal = (props) => {
     new Array(indicationLabels.length).fill(false)
   );
 
-  const labelButtons = checkedDateState.map((val, idx) => (
-/*
-    <CFormCheck button={{ color: 'secondary', shape: 'rounded-pill' }}
-                type="radio"
-                name="options"
-                key={idx}
-                id={'label' + idx}
-                label={dateLabels[idx]}>
-    </CFormCheck>
-*/
-    <CButton key={idx}
-            active={val}
-            disabled={idx === checkedDateState.length-1 ? true : false}
-            className='m-1'
-            color="primary"
-            variant="outline"
-            shape="rounded-pill"
-            onClick={() => {
-              let newArr = new Array(checkedDateState.length).fill(false)
-              newArr[idx] = true
-              setcheckedDateState(newArr)
-            }}>
-            {dateLabels[idx]}
-    </CButton>
-  ));
+  const labelButtons = checkedDateState.map((val, idx) => {
+      return(
+        <CButton
+          key={idx}
+          active={val}
+          className='m-1'
+          color="primary"
+          variant="outline"
+          shape="rounded-pill"
+          onClick={() => {
+            let isSelected = checkedDateState[idx];
+
+            let newArr = new Array(checkedDateState.length).fill(false)
+
+            if(!isSelected) {
+              newArr[idx] = true;
+            }
+            setcheckedDateState(newArr)
+          }
+        }>
+          {dateLabels[idx]}
+        </CButton>
+      )
+    }
+  );
 
   const statusButtons = checkedStatusState.map((val, idx) => (
     <CFormCheck key={idx}
@@ -162,8 +281,12 @@ const SearchModal = (props) => {
                size="lg"
                onClick={() => setVisible(!visible)}>
       <BsSliders />
-        &nbsp;&nbsp;More Filters...
+        &nbsp;&nbsp;Filters...
       </CButton>
+
+      <span>
+      <AppliedFilters columns={columns}/>
+      </span>
 
       <CModal size ='lg' visible={visible} onClose={() => setVisible(false)}>
         <CModalHeader>
@@ -179,6 +302,17 @@ const SearchModal = (props) => {
               <CCardTitle>Submitted</CCardTitle>
               <CCardBody>
                 {labelButtons.map(b => b)}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                {checkedDateState[checkedDateState.length - 1] ?
+                  <DateCustom setDateSelectionFunc={setDateSelection}
+                              selection={dateSelection.selection}/>
+                  : null
+                }
+                </div>
               </CCardBody>
             </CCard>
             </CCol>
@@ -274,7 +408,7 @@ const SearchModal = (props) => {
             Reset
           </CButton>
           <CButton color="primary" onClick={() => {
-            applyFilterChanges(columns, checkedDateState, checkedStatusState, checkedIndicationState);
+            applyFilterChanges(columns, checkedDateState, checkedStatusState, checkedIndicationState, dateSelection);
             setVisible(false);
           }}>
             Apply
@@ -286,9 +420,16 @@ const SearchModal = (props) => {
 }
 
 SearchModal.propTypes = {
-  hg: PropTypes.node
-  //filter: PropTypes.node,
-  //setFilter: PropTypes.elementType
+  hg: PropTypes.array
+}
+
+DateCustom.propTypes = {
+  setDateSelectionFunc: PropTypes.func,
+  selection: PropTypes.array,
+}
+
+AppliedFilters.propTypes = {
+  columns: PropTypes.array,
 }
 
 export default SearchModal
