@@ -25,27 +25,30 @@ function multiSelectFilter(rows, colIds, filterValue){
 }
 
 const defaultHeader = (headerText) => {
-  return( <div style={{ textAlign: "center" }}>{headerText}</div> );
+  return( <span style={{ textAlign: "center" }}>{headerText}</span> );
 }
 
 export const COLUMNS = [
       {
-        Header: defaultHeader('Name'),
-        Footer: 'Name',
+        Header: defaultHeader('Name / Phone'),
+        Footer: 'Name / Phone',
         accessor: 'name',
-        disableFilters: true
-      } ,
-      {
-        Header: defaultHeader('Phone'),
-        Footer: 'Phone',
-        accessor: 'phone',
-        disableSortBy: true,
-        disableFilters: true
-      }, 
+        width: "25%",
+        disableFilters: true,
+        Cell: row => {
+          return(
+            <>
+              <div><strong>{row.row.original.name}</strong></div>
+              <div>{row.row.original.phone}</div>
+            </>
+          )
+        }
+      },
       {
         Header: defaultHeader('Engagement'),
         Footer: 'Engagement',
         accessor: 'engagement',
+        width: "5%",
         disableSortBy: true,
         disableFilters: true,
       },
@@ -53,24 +56,28 @@ export const COLUMNS = [
         Header: defaultHeader('E-mail'),
         Footer: 'E-mail',
         accessor: 'email',
+        width: "25%",
         disableFilters: true
       },
       {
         Header: defaultHeader('Date'),
         Footer: 'Date',
         accessor: 'date',
+        width: "10%",
         filter: multiSelectFilter
       },
       {
         Header: defaultHeader('Lead Status'),
         Footer: 'Lead Status',
         accessor: 'status',
+        width: "15%",
         filter: multiSelectFilter
       },
       {
         Header: defaultHeader('Indication'),
         Footer: 'Indication',
         accessor: 'indication',
+        width: "20%",
         filter: multiSelectFilter
       }
    ];

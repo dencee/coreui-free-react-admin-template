@@ -12,6 +12,8 @@ import{
   CPaginationItem,
 } from '@coreui/react'
 
+import { FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
+
 export const LeadTable = () => {
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => MOCK_DATA, []);
@@ -59,14 +61,14 @@ export const LeadTable = () => {
 
       <StickyTable height={350}>
       <Table {...getTableProps()} striped bordered hover responsive="sm">
-        <thead>
+      <thead>
           {headerGroups.map( (headerGroup, idx1) => (
             <tr key={idx1} {...headerGroup.getHeaderGroupProps()} className='customRow header blue'>
               {headerGroup.headers.map( (column, idx2) => (
-                <th key={idx2} {...column.getHeaderProps(column.getSortByToggleProps())}>
+                <th key={idx2} width={column.width} {...column.getHeaderProps(column.getSortByToggleProps())}>
                   {column.render('Header')}
-                  <span>
-                    {column.isSorted ? column.isSortedDesc ? '|' : '^' : ''}
+                  <span style={{float: 'right'}}>
+                    {column.canSort ? column.isSorted ? column.isSortedDesc ? <FaSortDown /> : <FaSortUp /> : <FaSort /> : ''}
                   </span>
                 </th>
               ))}
@@ -74,7 +76,7 @@ export const LeadTable = () => {
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {page.map((row, idx1) => {
+        {page.map((row, idx1) => {
             prepareRow(row)
             return (
               <tr key={idx1} {...row.getRowProps()} className='customRow'>

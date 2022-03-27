@@ -276,11 +276,13 @@ const SearchModal = (props) => {
 
   return (
     <>
-      <CButton color="primary"
-               variant="outline"
-               size="lg"
-               onClick={() => setVisible(!visible)}>
-      <BsSliders />
+      <CButton
+        color="primary"
+        variant="outline"
+        size="lg"
+        onClick={() => setVisible(!visible)}
+      >
+        <BsSliders />
         &nbsp;&nbsp;Filters...
       </CButton>
 
