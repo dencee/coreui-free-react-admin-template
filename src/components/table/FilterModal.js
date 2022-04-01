@@ -19,14 +19,14 @@ import {
 import { DateRange } from 'react-date-range';
 import { BsSliders } from 'react-icons/bs';
 
-const dateLabels = ['Today', 'Yesterday', 'Last 7 Days', 'Last 30 Days', 'This Month', 'Last Month', 'Custom'];
-const statusLabels = ['New', 'Contacting', 'Not Eligible', 'Duplicate', 'Fraudulent', 'Bad Info', 'Test Lead',
-                      'In Prescreening', 'Qualified Screening', 'Prescreen Fail', 'Prescreen No Show', 'Scheduled Screening',
-                      'Screen No Show', 'In Screening', 'Screen Fail', 'Randomized', 'No Contact'];
-const clientLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-const indicationLabels = ['Adjustment Disorder', 'Depression', 'Lumbosacral Radicular Pain', 'Migraine', 'N/A',
-                          'Obsessive Compulsive Disorder', 'PTSD', 'Schizophrenia', 'Schizophrenia - Weight Gain',
-                          'Social Anxiety Disorder'];
+// const dateLabels = ['Today', 'Yesterday', 'Last 7 Days', 'Last 30 Days', 'This Month', 'Last Month', 'Custom'];
+// const statusLabels = ['New', 'Contacting', 'Not Eligible', 'Duplicate', 'Fraudulent', 'Bad Info', 'Test Lead',
+//                       'In Prescreening', 'Qualified Screening', 'Prescreen Fail', 'Prescreen No Show', 'Scheduled Screening',
+//                       'Screen No Show', 'In Screening', 'Screen Fail', 'Randomized', 'No Contact'];
+// const clientLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+// const indicationLabels = ['Adjustment Disorder', 'Depression', 'Lumbosacral Radicular Pain', 'Migraine', 'N/A',
+//                           'Obsessive Compulsive Disorder', 'PTSD', 'Schizophrenia', 'Schizophrenia - Weight Gain',
+//                           'Social Anxiety Disorder'];
 
 function getFormattedDate(dateObj){
   return (dateObj.getMonth() + 1) + '/' + dateObj.getDate() + '/' + dateObj.getFullYear();
@@ -82,7 +82,11 @@ const AppliedFilters = (props) => {
   return filtersArr;
 };
 
-function applyFilterChanges(columns, checkedDateState, checkedStatusState, checkedIndicationState, dateSelection){
+function applyFilterChanges(columns, checkedDateState, checkedStatusState, checkedIndicationState, dateSelection, labels){
+  const dateLabels = labels['dates']
+  const statusLabels = labels['statuses']
+  const indicationLabels = labels['indications']
+
   columns.forEach( (column) => {
     let filterArr = []
 
@@ -162,9 +166,12 @@ function applyFilterChanges(columns, checkedDateState, checkedStatusState, check
   });
 }
 
-const SearchModal = (props) => {
-  //const columns = props.hg[0].headers == null ? null : props.hg[0].headers;
-  const columns = props.hg[0].headers;
+const FilterModal = (props) => {
+  const columns = props.headerGroups[0].headers;
+  const dateLabels = props.labels['dates'];
+  const statusLabels = props.labels['statuses'];
+  const clientLabels = props.labels['clients'];
+  const indicationLabels = props.labels['indications'];
 
   // Visibility of the filter modal
   const [visible, setVisible] = useState(false);
@@ -410,7 +417,7 @@ const SearchModal = (props) => {
             Reset
           </CButton>
           <CButton color="primary" onClick={() => {
-            applyFilterChanges(columns, checkedDateState, checkedStatusState, checkedIndicationState, dateSelection);
+            applyFilterChanges(columns, checkedDateState, checkedStatusState, checkedIndicationState, dateSelection, props.labels);
             setVisible(false);
           }}>
             Apply
@@ -421,8 +428,8 @@ const SearchModal = (props) => {
   )
 }
 
-SearchModal.propTypes = {
-  hg: PropTypes.array
+FilterModal.propTypes = {
+  headerGroups: PropTypes.array
 }
 
 DateCustom.propTypes = {
@@ -434,4 +441,4 @@ AppliedFilters.propTypes = {
   columns: PropTypes.array,
 }
 
-export default SearchModal
+export default FilterModal
