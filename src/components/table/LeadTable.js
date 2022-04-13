@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import {
   useTable, useSortBy, useGlobalFilter, useFilters,
   usePagination, useRowSelect, useColumnOrder
@@ -18,25 +18,26 @@ import {
 
 import { FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
 
-const dateLabels = ['Today', 'Yesterday', 'Last 7 Days', 'Last 30 Days', 'This Month', 'Last Month', 'Custom'];
-const statusLabels = ['New', 'Contacting', 'Not Eligible', 'Duplicate', 'Fraudulent', 'Bad Info', 'Test Lead',
-                      'In Prescreening', 'Qualified Screening', 'Prescreen Fail', 'Prescreen No Show', 'Scheduled Screening',
-                      'Screen No Show', 'In Screening', 'Screen Fail', 'Randomized', 'No Contact'];
-const clientLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-const indicationLabels = ['Adjustment Disorder', 'Depression', 'Lumbosacral Radicular Pain', 'Migraine', 'N/A',
-                          'Obsessive Compulsive Disorder', 'PTSD', 'Schizophrenia', 'Schizophrenia - Weight Gain',
-                          'Social Anxiety Disorder'];
+// const dateLabels = ['Today', 'Yesterday', 'Last 7 Days', 'Last 30 Days', 'This Month', 'Last Month', 'Custom'];
+// const statusLabels = ['New', 'Contacting', 'Not Eligible', 'Duplicate', 'Fraudulent', 'Bad Info', 'Test Lead',
+//                       'In Prescreening', 'Qualified Screening', 'Prescreen Fail', 'Prescreen No Show', 'Scheduled Screening',
+//                       'Screen No Show', 'In Screening', 'Screen Fail', 'Randomized', 'No Contact'];
+// const clientLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+// const indicationLabels = ['Adjustment Disorder', 'Depression', 'Lumbosacral Radicular Pain', 'Migraine', 'N/A',
+//                           'Obsessive Compulsive Disorder', 'PTSD', 'Schizophrenia', 'Schizophrenia - Weight Gain',
+//                           'Social Anxiety Disorder'];
 
-const labels = {
-  'dates': dateLabels,
-  'statuses': statusLabels,
-  'clients': clientLabels,
-  'indications': indicationLabels,
-}
+// const labels = {
+//   'dates': dateLabels,
+//   'statuses': statusLabels,
+//   'clients': clientLabels,
+//   'indications': indicationLabels,
+// }
 
 export const LeadTable = () => {
   const columns = useMemo(() => COLUMNS, []);
-  const data = useMemo(() => MOCK_DATA, []);
+  //const data = useMemo(() => MOCK_DATA, []);
+  const [data, setData] = useState(MOCK_DATA);
 
   const {
     getTableProps,
@@ -57,6 +58,7 @@ export const LeadTable = () => {
     setPageSize,
     state: { pageIndex, pageSize },
     selectedFlatRows,
+    visibleColumns
   } = useTable({
     columns,
     data,
@@ -88,8 +90,10 @@ export const LeadTable = () => {
 
   return (
     <>
-      <RowEditModal selected={selectedFlatRows} labels={labels} />
-      <span><FilterModal headerGroups={headerGroups} labels={labels} /></span>
+      <div style={{display: 'flex'}}>
+        <RowEditModal data={data} selected={selectedFlatRows} setData={setData}/>
+        <FilterModal headerGroups={headerGroups}/>
+      </div>
       <br />
 
       <StickyTable height={350}>

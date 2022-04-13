@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import PropTypes from 'prop-types';
 import {
   CFormCheck,
@@ -16,6 +16,7 @@ import {
   CRow
 } from '@coreui/react'
 
+import Labels from 'src/components/table/LABELS.json'
 import { DateRange } from 'react-date-range';
 import { BsSliders } from 'react-icons/bs';
 
@@ -23,7 +24,7 @@ import { BsSliders } from 'react-icons/bs';
 // const statusLabels = ['New', 'Contacting', 'Not Eligible', 'Duplicate', 'Fraudulent', 'Bad Info', 'Test Lead',
 //                       'In Prescreening', 'Qualified Screening', 'Prescreen Fail', 'Prescreen No Show', 'Scheduled Screening',
 //                       'Screen No Show', 'In Screening', 'Screen Fail', 'Randomized', 'No Contact'];
-// const clientLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+const clientLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 // const indicationLabels = ['Adjustment Disorder', 'Depression', 'Lumbosacral Radicular Pain', 'Migraine', 'N/A',
 //                           'Obsessive Compulsive Disorder', 'PTSD', 'Schizophrenia', 'Schizophrenia - Weight Gain',
 //                           'Social Anxiety Disorder'];
@@ -83,9 +84,9 @@ const AppliedFilters = (props) => {
 };
 
 function applyFilterChanges(columns, checkedDateState, checkedStatusState, checkedIndicationState, dateSelection, labels){
-  const dateLabels = labels['dates']
-  const statusLabels = labels['statuses']
-  const indicationLabels = labels['indications']
+  const dateLabels = labels.dateLabels;
+  const statusLabels = labels.statusLabels;
+  const indicationLabels = labels.indicationLabels;
 
   columns.forEach( (column) => {
     let filterArr = []
@@ -168,10 +169,11 @@ function applyFilterChanges(columns, checkedDateState, checkedStatusState, check
 
 const FilterModal = (props) => {
   const columns = props.headerGroups[0].headers;
-  const dateLabels = props.labels['dates'];
-  const statusLabels = props.labels['statuses'];
-  const clientLabels = props.labels['clients'];
-  const indicationLabels = props.labels['indications'];
+
+  const labels = useMemo(() => Labels, []);
+  const dateLabels = labels.dateLabels;
+  const statusLabels = labels.statusLabels;
+  const indicationLabels = labels.indicationLabels;
 
   // Visibility of the filter modal
   const [visible, setVisible] = useState(false);
@@ -286,7 +288,6 @@ const FilterModal = (props) => {
       <CButton
         color="primary"
         variant="outline"
-        size="lg"
         onClick={() => setVisible(!visible)}
       >
         <BsSliders />
@@ -371,7 +372,7 @@ const FilterModal = (props) => {
               </CCardBody>
             </CCard>
             </CCol>
-          </ CRow>
+          </CRow>
 
           <CRow>
             <CCol>
@@ -417,7 +418,7 @@ const FilterModal = (props) => {
             Reset
           </CButton>
           <CButton color="primary" onClick={() => {
-            applyFilterChanges(columns, checkedDateState, checkedStatusState, checkedIndicationState, dateSelection, props.labels);
+            applyFilterChanges(columns, checkedDateState, checkedStatusState, checkedIndicationState, dateSelection, labels);
             setVisible(false);
           }}>
             Apply

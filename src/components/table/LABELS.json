@@ -1,0 +1,48 @@
+{
+  "engagementLabels": [
+    "Text",
+    "E-mail",
+    "Phone",
+    "Voicemail"
+  ],
+  "dateLabels": [
+    "Today",
+    "Yesterday",
+    "Last 7 Days",
+    "Last 30 Days",
+    "This Month",
+    "Last Month",
+    "Custom"
+  ],
+  "statusLabels": [
+    "New",
+    "Contacting",
+    "Not Eligible",
+    "Duplicate",
+    "Fraudulent",
+    "Bad Info",
+    "Test Lead",
+    "In Prescreening",
+    "Qualified Screening",
+    "Prescreen Fail",
+    "Prescreen No Show",
+    "Scheduled Screening",
+    "Screen No Show",
+    "In Screening",
+    "Screen Fail",
+    "Randomized",
+    "No Contact"
+  ],
+  "indicationLabels": [
+    "Adjustment Disorder",
+    "Depression",
+    "Lumbosacral Radicular Pain",
+    "Migraine",
+    "N/A",
+    "Obsessive Compulsive Disorder",
+    "PTSD",
+    "Schizophrenia",
+    "Schizophrenia - Weight Gain",
+    "Social Anxiety Disorder"
+  ]
+}

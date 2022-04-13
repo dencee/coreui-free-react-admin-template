@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import PropTypes from 'prop-types';
 import {
   CButton,
@@ -12,12 +12,11 @@ import {
   CCol,
   CRow,
   CContainer,
-  CDropdown,
-  CDropdownToggle,
-  CDropdownMenu,
-  CDropdownItem,
+  CFormSelect,
+  CFormTextarea,
 } from '@coreui/react'
 
+import Labels from 'src/components/table/LABELS.json'
 import { BsSliders } from 'react-icons/bs';
 
 function isEmpty(obj) {
@@ -28,54 +27,91 @@ function formatEntryName(propertyStr) {
   return propertyStr.charAt(0).toUpperCase() + propertyStr.slice(1, propertyStr.length);
 }
 
-const formatEntrySet = (property, data, labels) => {
+function applyChanges(tableData, selected, setData){
 
-  // {statusLabels.map((val, idx) => (
-  //   <CDropdownItem key={idx} href="#">{val}</CDropdownItem>
-  // ))}
+  selected.forEach(row => {
+    for( let i = 0; i < tableData.length; i++ ){
 
-  // {indicationLabels.map((val, idx) => (
-  //   <CDropdownItem key={idx} href="#">{val}</CDropdownItem>
-  // ))}
+      /*
+       * DMC Assumes only 1 unique name in table
+       */
+      if( tableData[i].name === row.values.name ){
+        tableData[i] = row.values;
+        break;
+      }
+    }
+  });
 
-  if (property.toLowerCase() === 'status') {
-    const statusLabels = labels['statuses']
+  setData([...tableData]);
 
-    return (
-      <CDropdown>
-        <CDropdownToggle color="secondary">{data[property]}</CDropdownToggle>
-        <CDropdownMenu>
-
-        </CDropdownMenu>
-      </CDropdown>
-    )
-  } else if (property.toLowerCase() === 'indication') {
-    const indicationLabels = labels['indications']
-
-    return (
-      <CDropdown>
-        <CDropdownToggle color="secondary">{data[property]}</CDropdownToggle>
-        <CDropdownMenu>
-
-        </CDropdownMenu>
-      </CDropdown>
-    )
-  } else if (property.toLowerCase() === 'dates') {
-    //const dateLabels = labels['dates']
-    return <CFormInput type="text" defaultValue={data[property]} />
-
-  } else if (property.toLowerCase() === 'clients') {
-    //const clientLabels = labels['clients']
-    return <CFormInput type="text" defaultValue={data[property]} />
-
-  } else {
-    return <CFormInput type="text" defaultValue={data[property]} />
-  }
-
+  console.log('applied')
 }
 
-const ChangeFields = (selectedRows, labels) => {
-  const selectedArr = selectedRows.selectedRows;
+const FormatEntrySet = (props) => {
+  const data = props.data;
+  const property = props.property;
+  const labels = useMemo(() => Labels, []);
+
+  const engagementLabels = labels.engagementLabels.map((val, idx) => (
+    <option key={idx} value={idx}>{val}</option>
+  ));
+
+  const statusLabels = labels.statusLabels.map((val, idx) => (
+    <option key={idx} value={idx}>{val}</option>
+  ));
+
+  const indicationLabels = labels.indicationLabels.map((val, idx) => (
+    <option key={idx} value={idx}>{val}</option>
+  ));
+
+  if (property.toLowerCase() === 'engagement') {
+    return (
+      <CFormSelect
+        onChange={event => data[property] = labels.engagementLabels[parseInt(event.target.value)]}
+      >
+        <option>{data[property]}</option>
+        {engagementLabels}
+      </CFormSelect>
+    )
+  } else if (property.toLowerCase() === 'status') {
+    return (
+      <CFormSelect
+        onChange={event => data[property] = labels.statusLabels[parseInt(event.target.value)]}
+      >
+        <option>{data[property]}</option>
+        {statusLabels}
+      </CFormSelect>
+    )
+  } else if (property.toLowerCase() === 'indication') {
+    return (
+      <CFormSelect
+        onChange={event => data[property] = labels.indicationLabels[parseInt(event.target.value)]}
+      >
+        <option>{data[property]}</option>
+        {indicationLabels}
+      </CFormSelect>
+    )
+  } else if (property.toLowerCase() === 'dates') {
+    return (
+      <CFormInput
+        type="text"
+        defaultValue={data[property]}
+        onChange={event => data[property] = event.target.value}
+      />
+    ) 
+  } else {
+    return (
+      <CFormInput
+        type="text"
+        defaultValue={data[property]}
+        onChange={event => data[property] = event.target.value}
+      />
+    )
+  }
+}
+
+const ChangeFields = (props) => {
+  const selectedArr = props.selectedRows;
 
   if (selectedArr == null) {
     return null;
@@ -83,11 +119,16 @@ const ChangeFields = (selectedRows, labels) => {
 
   return (
     selectedArr.map(row => {
-      const originalData = row.original;
+      const data = row.values;
+
+      /*
+       * -DMC Hack b/c phone isn't in values
+       */
+      data['phone'] = row.original['phone'];
 
       let fields = []
 
-      for (const property in originalData) {
+      for (const property in data) {
         fields.push(
           <CContainer key={property}>
             <CRow className="g-1 p-1 align-items-center">
@@ -97,12 +138,21 @@ const ChangeFields = (selectedRows, labels) => {
                 </CFormLabel>
               </CCol>
               <CCol md="8">
-                {formatEntrySet(property, originalData, labels)}
+                <FormatEntrySet property={property} data={data} />
               </CCol>
             </CRow>
           </CContainer>
         )
       }
+
+      fields.push(
+        <CContainer key='notes'>
+          <CRow>
+            <CFormLabel>Notes</CFormLabel>
+            <CFormTextarea rows="2" />
+          </CRow>
+        </CContainer>
+      );
 
       return fields;
     })
@@ -110,44 +160,45 @@ const ChangeFields = (selectedRows, labels) => {
 }
 
 const RowEditModal = (props) => {
-  const selected = props.selected;
+  const tableData = props.data;
+  const setTableData = props.setData;
+  let selected = props.selected;
 
   // Visibility of the row edit modal
-  const [visible, setVisible] = useState(false);
-
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <>
       <CButton
         color="primary"
         variant="outline"
+        className='me-2'
         disabled={isEmpty(selected)}
-        onClick={() => setVisible(!visible)}
+        onClick={() => setModalVisible(!modalVisible)}
       >
         <BsSliders />
         &nbsp;&nbsp;Edit
       </CButton>
 
-      <CModal visible={visible} onClose={() => setVisible(false)}>
+      <CModal visible={modalVisible} backdrop='static' onClose={() => setModalVisible(false)}>
         <CModalHeader>
           <CModalTitle>
             Edit Entry
           </CModalTitle>
         </CModalHeader>
         <CModalBody>
-          <ChangeFields selectedRows={selected} labels={props.labels} />
+          <ChangeFields selectedRows={selected} />
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary"
             onClick={() => {
-              console.log("Cancelled");
-              setVisible(false);
+              setModalVisible(false);
             }}>
             Cancel
           </CButton>
           <CButton color="primary" onClick={() => {
-            console.log("Applied");
-            setVisible(false);
+            applyChanges(tableData, selected, setTableData);
+            setModalVisible(false);
           }}>
             Apply
           </CButton>
