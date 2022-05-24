@@ -4,6 +4,7 @@ import React, { useContext, useState, useEffect } from "react"
 import {
   signInWithEmailAndPassword,
   signOut,
+  sendPasswordResetEmail,
   onAuthStateChanged
 } from "firebase/auth";
 import FirebaseApp, { auth } from "src/firebase";
@@ -19,23 +20,20 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   const login = async (email, password) => {
-      await signInWithEmailAndPassword(auth, email, password)
+    await signInWithEmailAndPassword(auth, email, password)
   }
 
-  function logout() {
-    return auth.signOut()
+  const logout = async () => {
+    await signOut(auth)
   }
 
-  // const logout = async () => {
-  //   await signOut(auth)
-  // }
-
-  const updateEmail = (email) => {
-    currentUser.updateEmail(email)
+  const sendPasswordReset = async (email) => {
+    await sendPasswordReset(auth, email)
   }
 
-  const updatePassword = (password) => {
-    currentUser.updatePassword(password)
+  const updatePassword = async (newPassword) => {
+    //currentUser.updatePassword(newPassword)
+    updatePassword(currentUser, newPassword)
   }
 
   useEffect(() => {
@@ -55,8 +53,8 @@ export function AuthProvider({ children }) {
     currentUser,
     login,
     logout,
-    updateEmail,
-    updatePassword
+    updatePassword,
+    sendPasswordReset,
   }
 
   return (

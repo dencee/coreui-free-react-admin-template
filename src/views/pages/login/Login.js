@@ -88,7 +88,7 @@ const Login = () => {
                       type="password"
                       placeholder="Password"
                       autoComplete="current-password"
-                      onChange={(event) => setPasswordValue(event.target.value)}
+                      onChange={event => setPasswordValue(event.target.value)}
                     />
                   </CInputGroup>
                   <CRow>
@@ -97,11 +97,6 @@ const Login = () => {
                         Login
                       </CButton>
                     </CCol>
-                    {/* <CCol xs={6} className="text-right">
-                        <CButton color="link" className="px-0">
-                          Forgot password?
-                        </CButton>
-                      </CCol> */}
                   </CRow>
                   <CRow md={4}>
                   <CCol>

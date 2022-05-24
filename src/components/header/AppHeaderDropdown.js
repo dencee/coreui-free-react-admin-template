@@ -54,7 +54,7 @@ const AppHeaderDropdown = () => {// { setError } ) => {
           Messages
         </CDropdownItem>
         <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
-        <CDropdownItem href="./components/settings">
+        <CDropdownItem href="/#/settings">
           <CIcon icon={cilSettings} className="me-2" />
           Settings
         </CDropdownItem>
