@@ -18,21 +18,22 @@ import {
 
 import { FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
 
-// const dateLabels = ['Today', 'Yesterday', 'Last 7 Days', 'Last 30 Days', 'This Month', 'Last Month', 'Custom'];
-// const statusLabels = ['New', 'Contacting', 'Not Eligible', 'Duplicate', 'Fraudulent', 'Bad Info', 'Test Lead',
-//                       'In Prescreening', 'Qualified Screening', 'Prescreen Fail', 'Prescreen No Show', 'Scheduled Screening',
-//                       'Screen No Show', 'In Screening', 'Screen Fail', 'Randomized', 'No Contact'];
-// const clientLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-// const indicationLabels = ['Adjustment Disorder', 'Depression', 'Lumbosacral Radicular Pain', 'Migraine', 'N/A',
-//                           'Obsessive Compulsive Disorder', 'PTSD', 'Schizophrenia', 'Schizophrenia - Weight Gain',
-//                           'Social Anxiety Disorder'];
+import { initializeApp } from 'firebase/app';
+import { getDatabase } from "firebase/database";
 
-// const labels = {
-//   'dates': dateLabels,
-//   'statuses': statusLabels,
-//   'clients': clientLabels,
-//   'indications': indicationLabels,
-// }
+const firebaseConfig = {
+  apiKey: "AIzaSyCLVQ7gbC1kvalCmBLomrMipLaSQ7go22U",
+  authDomain: "testproject-59dc0.firebaseapp.com",
+  databaseURL: "https://testproject-59dc0-default-rtdb.firebaseio.com",
+  projectId: "testproject-59dc0",
+  storageBucket: "testproject-59dc0.appspot.com",
+  messagingSenderId: "281674466651",
+  appId: "1:281674466651:web:3a5b4e81693f7a6176067e",
+  measurementId: "G-BS8TQY5B63"
+};
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
 export const LeadTable = () => {
   const columns = useMemo(() => COLUMNS, []);

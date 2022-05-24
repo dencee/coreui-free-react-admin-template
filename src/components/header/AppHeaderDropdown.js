@@ -17,7 +17,27 @@ import {
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 
-const AppHeaderDropdown = () => {
+import { useHistory } from "react-router-dom"
+import { useAuth } from "src/contexts/AuthContext"
+
+const AppHeaderDropdown = () => {// { setError } ) => {
+  const history = useHistory();
+  const { logout } = useAuth();
+
+  async function handleLogout(e) {
+    console.log('Handling logout')
+  
+    //setError("")
+  
+    try {
+      await logout();
+      history.push("/login")
+    } catch {
+      //setError("Failed to log out")
+      console.log("Failed to log out")
+    }
+  }
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
@@ -34,16 +54,12 @@ const AppHeaderDropdown = () => {
           Messages
         </CDropdownItem>
         <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
-        <CDropdownItem href="#">
-          <CIcon icon={cilUser} className="me-2" />
-          Profile
-        </CDropdownItem>
-        <CDropdownItem href="#">
+        <CDropdownItem href="./components/settings">
           <CIcon icon={cilSettings} className="me-2" />
           Settings
         </CDropdownItem>
         <CDropdownDivider />
-        <CDropdownItem href="#">
+        <CDropdownItem href="#" onClick={handleLogout}>
           <CIcon icon={cilAccountLogout} className="me-2" />
           Logout
         </CDropdownItem>

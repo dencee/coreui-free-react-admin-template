@@ -35,7 +35,7 @@ function applyChanges(tableData, selected, setData){
       /*
        * DMC Assumes only 1 unique name in table
        */
-      if( tableData[i].name === row.values.name ){
+      if( tableData[i].name === row.original.name ){
         tableData[i] = row.values;
         break;
       }
@@ -43,8 +43,6 @@ function applyChanges(tableData, selected, setData){
   });
 
   setData([...tableData]);
-
-  console.log('applied')
 }
 
 const FormatEntrySet = (props) => {
