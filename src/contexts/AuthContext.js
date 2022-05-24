@@ -28,7 +28,7 @@ export function AuthProvider({ children }) {
   }
 
   const sendPasswordReset = async (email) => {
-    await sendPasswordReset(auth, email)
+    await sendPasswordResetEmail(auth, email)
   }
 
   const updatePassword = async (newPassword) => {

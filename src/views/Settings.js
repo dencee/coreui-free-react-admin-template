@@ -22,12 +22,8 @@ import { useAuth } from "src/contexts/AuthContext"
 import { useHistory } from "react-router-dom"
 
 const Settings = () => {
-  const { updatePassword } = useAuth()
+  const { sendPasswordReset } = useAuth()
   const [error, setError] = useState("")
-  const [currentpasswordValue, setCurrentPasswordValue] = useState("");
-  const [passwordValue, setPasswordValue] = useState("");
-  const [passwordValueConfirm, setPasswordValueConfirm] = useState("");
-  const history = useHistory()
 
   const getUserInfo = () => {
     let userInfo = {};
@@ -58,12 +54,16 @@ const Settings = () => {
   }
 
   const showError = () => {
-    console.log("LOGIN ERROR");
+    const isError = error.toLowerCase().includes('error');
 
     return (
-      <CAlert color="danger">
-        ERROR: {error}
-      </CAlert>
+      isError ?
+        <CAlert color="danger">
+          ERROR: {error}
+        </CAlert>
+      : <CAlert color="success">
+          SUCCESS: {error}
+        </CAlert>
     )
   }
 
@@ -72,35 +72,19 @@ const Settings = () => {
 
     e.preventDefault()
     setError("")
+    const email = getUserInfo().email
 
-    if( passwordValue === passwordValueConfirm ){
+    if( email ){
       try {
-        await updatePassword(passwordValue)
+        await sendPasswordReset(email)
+        setError("Password reset send to: " + email)
       } catch (errorMessage) {
-        setError("Error: Failed to update password")
+        setError("Error: Failed to send password reset e-mail")
         console.log("Password change ERROR!!!" + errorMessage)
       }
     } else {
-      setError("Error: Passwords do not match")
+      setError("Error: Invalid e-mail")
     }
-
-    // https://stackoverflow.com/questions/37811684/how-to-create-credential-object-needed-by-firebase-web-user-reauthenticatewith
-    // import {
-    //     EmailAuthProvider,
-    //     getAuth,
-    //     reauthenticateWithCredential,
-    // } from 'firebase/auth'
-  
-    // const auth = getAuth()
-    // const credential = EmailAuthProvider.credential(
-    //     auth.currentUser.email,
-    //     userProvidedPassword
-    // )
-    // const result = await reauthenticateWithCredential(
-    //     auth.currentUser, 
-    //     credential
-    // )
-    // // User successfully reauthenticated. New ID tokens should be valid.
   }
 
   return (
@@ -118,41 +102,11 @@ const Settings = () => {
             <CCard className="p-4">
               <CCardBody>
                 <CForm onSubmit={handleSubmit}>
-                <CFormLabel className="mb-3 col-form-label">E-Mail: {getUserInfo().email}</CFormLabel>
-                <CInputGroup className="mb-3">
-                  <CInputGroupText>
-                      <CIcon icon={cilLockLocked} />
-                    </CInputGroupText>
-                    <CFormInput
-                      type="password"
-                      placeholder="Current Password"
-                      onChange={event => setCurrentPasswordValue(event.target.value)}
-                    />
-                  </CInputGroup>
-                  <CInputGroup className="mb-3">
-                  <CInputGroupText>
-                      <CIcon icon={cilLockLocked} />
-                    </CInputGroupText>
-                    <CFormInput
-                      type="password"
-                      placeholder="New Password"
-                      onChange={event => setPasswordValue(event.target.value)}
-                    />
-                  </CInputGroup>
-                  <CInputGroup className="mb-4">
-                    <CInputGroupText>
-                      <CIcon icon={cilLockLocked} />
-                    </CInputGroupText>
-                    <CFormInput
-                      type="password"
-                      placeholder="Re-type New Password"
-                      onChange={event => setPasswordValueConfirm(event.target.value)}
-                    />
-                  </CInputGroup>
+                  <CFormLabel className="mb-3 col-form-label">E-Mail: {getUserInfo().email}</CFormLabel>
                   <CRow>
                     <CCol xs={6}>
                       <CButton type="submit" color="primary" className="px-4">
-                        Change Password
+                        Send Password Reset Email
                       </CButton>
                     </CCol>
                   </CRow>
